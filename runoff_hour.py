@@ -19,21 +19,21 @@ class MyList(list):
         traceback.print_stack()
         with open(log_file, "w", encoding="utf-8") as f:
             f.write(f"设置索引 {index} 的值为 {value}\n")
-            # 遍历调用堆栈的每一帧
+        
             for frame_info in inspect.stack():
                 frame = frame_info.frame
                 f.write(f"函数: {frame_info.function}  文件: {frame_info.filename}  行号: {frame_info.lineno}\n")
-                # 打印该帧的局部变量
+           
                 for var, val in frame.f_locals.items():
                     f.write(f"    {var} = {val!r}\n")
                 f.write("-" * 40 + "\n")
-        # 执行原来的赋值操作
+   
         super().__setitem__(index, value)
 
 
 class RunoffDay(object):
-    DATA_ARR = rasterio.open(Path('data/jz-raster.tif')).read(1)  # todo 地形
-    LOC = pd.read_excel('data/loc.xlsx')  # todo 属   性表
+    DATA_ARR = rasterio.open(Path('data/jz-raster.tif')).read(1)  #
+    LOC = pd.read_excel('data/loc.xlsx') 
 
     def __init__(self, folder: Path, is_load_category_idx=True, is_log=False):
         if is_log:
@@ -53,7 +53,7 @@ class RunoffDay(object):
         if is_load_category_idx:
             self.is_big_rain = np.load(folder / 'is_big_rain.npy')
             self.category_idx = self.get_category_idx()
-        self.area = 531.117 / 442628  # todo 面积和网格数量
+        self.area = ** 
         if is_log:
             logger.info(f'完成初始化 RunoffDay | folder={folder.parts[-1]}')
         self.r_cache = dict()
@@ -86,13 +86,13 @@ class RunoffDay(object):
             fca: Union[int, float], fcb: Union[int, float], save=False
     ) -> List[Union[int, float]]:
         """
-        每一个网格一种类型
+       
         """
         rg = 0
         rs = 0
         r_sat = 0
         r_int = 0
-        # rg
+      
         if 'Rg' in self.category_idx and self.category_idx['Rg']:
             # arr = rain[[i[0] for i in loc['Rg']], [i[1] for i in loc['Rg']]]
             if 'Rg' in self.r_cache:
@@ -110,7 +110,7 @@ class RunoffDay(object):
                 np.save(self.best_r / f'{date_str}_rg.npy', arr)
             rg = arr.mean()
 
-        # rs
+       
         if 'Rs' in self.category_idx and self.category_idx['Rs']:
             if 'Rs' in self.r_cache:
                 arr = self.r_cache['Rs']
@@ -127,7 +127,7 @@ class RunoffDay(object):
                 np.save(self.best_r / f'{date_str}_rs.npy', arr)
             rs = arr.mean()
 
-        # r_sat
+    
         if 'Rsat' in self.category_idx and self.category_idx['Rsat']:
             if 'Rsat' in self.r_cache:
                 arr = self.r_cache['Rsat']
@@ -145,7 +145,7 @@ class RunoffDay(object):
                 np.save(self.best_r / f'{date_str}_r_sat.npy', arr)
             r_sat = arr.mean()
 
-        # r_int
+    
         if 'Rint' in self.category_idx and self.category_idx['Rint']:
             if 'Rint' in self.r_cache:
                 arr = self.r_cache['Rint']
@@ -261,7 +261,7 @@ class RunoffDay(object):
 
 
 if __name__ == '__main__':
-    runoff_item = RunoffDay(Path('output1/20070606/2007060711'), True)
+    runoff_item = RunoffDay(Path(''), True)
     for i in range(10):
         a = perf_counter()
         print(runoff_item.get_q(
