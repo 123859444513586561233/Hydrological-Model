@@ -19,8 +19,7 @@ PROCESS_AMOUNT = 30
 def change_tif(tif_data, path, base_tif_df):
     tif_df = pd.DataFrame(tif_data, columns=['cate', 'row', 'col', 'v'])
     with rasterio.open('data/jz-raster-float64.tif', 'r') as src:
-        # 读取元信息 profile
-        profile = src.profile
+               profile = src.profile
     for idx, v in enumerate(CATEGORY_ORDER):
         with rasterio.open(path / f'{v}_mean.tif', 'w', **deepcopy(profile)) as dst:
             dst.write(pd.pivot(pd.merge(
