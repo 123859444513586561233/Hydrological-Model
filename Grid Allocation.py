@@ -7,17 +7,15 @@ from loguru import logger
 import rasterio
 from rasterio.warp import calculate_default_transform
 
-ROOT_PATH = Path(r'F:\XYYpaper\paper3-DJ\GIS\yuecheng\DaiMa\RainIDW')  # todo 所有洪水的路径
+ROOT_PATH = Path(r'') 
 
 
 def get_category_loc():
-    with rasterio.open(Path(r'data\yc-raster.tif')) as src:  # todo 网格图层
-        # 创建一个空数组用于存储转换后的数据
-        dataset_array = src.read(1)  # 读取栅格数据
+    with rasterio.open(Path(r'')) as src: 
+             dataset_array = src.read(1)  
         label = sorted(set(dataset_array.flatten()))[:-1]
 
-        # 遍历每个像素，转换为经纬度
-        lon_list = []
+               lon_list = []
         lat_list = []
         row_list = []
         col_list = []
@@ -25,11 +23,11 @@ def get_category_loc():
             for col in range(src.width):
                 if dataset_array[row, col] not in label:
                     continue
-                # 获取投影坐标
+              
                 x, y = src.xy(row, col)
                 row_list.append(row)
                 col_list.append(col)
-                # 转换为经纬度
+               
                 lon, lat = rasterio.warp.transform(src.crs, 'EPSG:4326', [x], [y])
                 lon_list.append(lon[0])
                 lat_list.append(lat[0])
@@ -47,14 +45,7 @@ def run(file, all_data):
 
 
 def main(folder):
-    # 定义地理坐标系（WGS84）和目标投影坐标系（Albers）
-    # wgs84 = pyproj.CRS("EPSG:4326")  # WGS84地理坐标系
-    # src = rasterio.open(next(Path(folder).glob('rainfall_idw_*_*.tif')))
-    # albers = pyproj.CRS.from_wkt(src.crs.to_string())
-
-    # 创建投影转换器
-    # transformer = pyproj.Transformer.from_crs(wgs84, albers, always_xy=True)
-    # transform_lon, transform_lat = transformer.transform(CATEGORY_LON_LIST, CATEGORY_LAT_LIST)
+   
     output = Path('output1') / folder.parts[-1]
     if not output.exists():
         output.mkdir(exist_ok=True, parents=True)
