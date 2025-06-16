@@ -27,29 +27,29 @@ def get_real(date_str) -> Dict[str, float]:
     return really
 
 
-class MyProblem(ea.Problem):  # 继承Problem父类
+class MyProblem(ea.Problem): 
     REALLY = None
 
     def __init__(self, runoff_item, date_str, folder_name):
-        count = 4  # 决策变量维数
-        name = 'MyProblem'  # 初始化name（函数名称，可以随意设置）
-        M = 1  # 目标维数
-        maxormins = [1]  # 目标最小最大化标记列表，1：最小化该目标；-1：最大化该目标
-        varTypes = [0] * count  # 决策变量的类型列表，0：实数；1：整数
+        count = 4
+        name = 'MyProblem' 
+        M = 1
+        maxormins = [1]  
+        varTypes = [0] * count  
         # 'fc', 'fp', 'fca', 'fcb'
-        lb = [0] * count  # 决策变量下界
-        # ub = [1.2, 7.8, 4.7, 3.6]  # 决策变量下界
-        ub = [7.6, 41.4, 30.6, 28.7]  # 决策变量上界
-        # ub = [1000]  * count # 决策变量上界
+        lb = [0] * count 
+        # ub = [1.2, 7.8, 4.7, 3.6]  
+        ub = [7.6, 41.4, 30.6, 28.7] 
+        # ub = [1000]  * count 
         self.runoff_item = runoff_item
         self.date_str = date_str
         if not self.REALLY:
             self.REALLY = get_real(folder_name)
         self.really = self.REALLY[date_str]
-        # 调用父类构造方法完成实例化
+     
         ea.Problem.__init__(self, name, M, maxormins, count, varTypes, lb, ub, lbin=[0] * count, ubin=[1] * count)
 
-    def evalVars(self, v):  # 目标函数
+    def evalVars(self, v): 
         result = []
         for row in range(v.shape[0]):
             r_v = self.runoff_item.get_r(self.date_str, v[row][0], v[row][1], v[row][2], v[row][3])
@@ -68,16 +68,16 @@ def miao(date: str, result: List, folder: Path, output: str):
     logger.info(f'开始 | date={date}')
     runoff_day = RunoffDay(folder)
     problem = MyProblem(runoff_day, date, folder.parts[-2])
-    # 构建算法
+ 
     algorithm = ea.soea_DE_currentToBest_1_bin_templet(
         problem,
         ea.Population(Encoding='RI', NIND=5000),
-        MAXGEN=50,  # 最大进化代数。
-        logTras=0,  # 表示每隔多少代记录一次日志信息，0表示不记录。
-        trappedValue=1e-6,  # 单目标优化陷入停滞的判断阈值。0
-        maxTrappedCount=6  # 进化停滞计数器最大上限值。
+        MAXGEN=50, 
+        logTras=0, 
+        trappedValue=1e-6, 
+        maxTrappedCount=6  
     )
-    # 求解
+
     try:
         res = ea.optimize(
             algorithm, verbose=True, drawing=1, outputMsg=True,
@@ -100,7 +100,7 @@ def miao(date: str, result: List, folder: Path, output: str):
 def solution(folder, now):
     output = os.path.join('result', folder.parts[-1], now)
     manager = Manager()
-    result = manager.list()  # 创建共享列表
+    result = manager.list()  
     tasks = []
     with futures.ProcessPoolExecutor(30) as t:
         for folder in tqdm(list(folder.glob('*'))):
@@ -128,7 +128,7 @@ def main():
         logger.info(f'开始 {f}')
         now_data = datetime.datetime.now().strftime('%Y%m%d %H%M%S')
         logger.add(Path('log') / f'{now_data}.log')
-        # todo 改文件夹名
+    
         try:
             solution(f, now_data)
         except:
@@ -138,4 +138,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # miao('2007060620', [], Path('output1/20070606/2007060620'), 'test')
+    # miao('', [], Path(''), 'test')
