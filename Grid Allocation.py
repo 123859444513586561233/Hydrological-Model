@@ -72,6 +72,6 @@ def main(folder):
 
 
 if __name__ == '__main__':
-    for f in ROOT_PATH.glob('*'):  # todo: 单场
+    for f in ROOT_PATH.glob('*'): 
         logger.info(f'开始 file={f.parts[-1]}')
         main(f)
