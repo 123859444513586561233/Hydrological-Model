@@ -26,28 +26,28 @@ def get_real(date_str) -> Dict[str, float]:
     return really
 
 
-class MyProblem(ea.Problem):  # 继承Problem父类
+class MyProblem(ea.Problem):  
     REALLY = None
 
     def __init__(self, runoff_item, date_str, idx, folder_name):
-        count = 7  # 决策变量维数
-        name = 'MyProblem'  # 初始化name（函数名称，可以随意设置）
-        M = 1  # 目标维数
-        maxormins = [1]  # 目标最小最大化标记列表，1：最小化该目标；-1：最大化该目标
-        varTypes = [0] * count  # 决策变量的类型列表，0：实数；1：整数
+        count = 7  
+        name = 'MyProblem'  
+        M = 1 
+        maxormins = [1] 
+        varTypes = [0] * count  
         # cg, ci,cs, csat m, miu, tp
-        lb = [0, 0, 0, 0, 0, 0, 0]  # 决策变量下界
-        ub = [1, 1, 1, 1, 50, 50, 15]  # 决策变量上界
+        lb = [0, 0, 0, 0, 0, 0, 0]  
+        ub = [1, 1, 1, 1, 50, 50, 15] 
         self.runoff_item = runoff_item
         self.date_str = date_str
         if not self.REALLY:
             self.REALLY = get_real(folder_name)
         self.really = self.REALLY[date_str]
         self.hour_idx = idx
-        # 调用父类构造方法完成实例化
+     
         ea.Problem.__init__(self, name, M, maxormins, count, varTypes, lb, ub, lbin=[0] * count, ubin=[0] * count)
 
-    def evalVars(self, v):  # 目标函数
+    def evalVars(self, v):
         result = []
         for row in range(v.shape[0]):
             q_v = self.runoff_item.get_q(
@@ -62,7 +62,7 @@ def miao(date: str, idx: int, result: List, folder: Path, output: str):
     logger.info(f'开始 | date={date}')
     runoff_day = RunoffDay(folder)
     problem = MyProblem(runoff_day, date, idx, folder.parts[-2])
-    # 构建算法
+ 
     algorithm = ea.soea_DE_currentToBest_1_bin_templet(
         problem,
         ea.Population(
@@ -73,12 +73,12 @@ def miao(date: str, idx: int, result: List, folder: Path, output: str):
                 problem.borders, precisions=[30, 30, 30, 30, 4, 4, 4]
             )
         ),
-        MAXGEN=30,  # 最大进化代数。
-        logTras=1,  # 表示每隔多少代记录一次日志信息，0表示不记录。
-        trappedValue=1e-10,  # 单目标优化陷入停滞的判断阈值。0
-        maxTrappedCount=10  # 进化停滞计数器最大上限值。
+        MAXGEN=30, 
+        logTras=1, 
+        trappedValue=1e-10,
+        maxTrappedCount=10 
     )
-    # 求解
+
     try:
         res = ea.optimize(
             algorithm, verbose=True, drawing=0, outputMsg=True,
@@ -100,7 +100,7 @@ def miao(date: str, idx: int, result: List, folder: Path, output: str):
 
 
 def solution(folder, now):
-    result = list()  # 创建共享列表
+    result = list()  
     output = os.path.join('result-q', folder.parts[-1], now)
     for idx, folder in tqdm(list(enumerate(sorted(
             [i for i in folder.glob('*') if i.is_dir()],
